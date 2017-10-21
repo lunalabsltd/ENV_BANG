@@ -5,7 +5,11 @@ require "env_bang/formatter"
 class ENV_BANG
   class << self
     def config(&block)
-      instance_eval(&block)
+      if block.arity > 0
+        block.call(self)
+      else
+        instance_eval(&block)
+      end
     end
 
     def use(var, *args)
