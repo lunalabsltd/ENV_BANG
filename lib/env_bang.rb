@@ -24,7 +24,7 @@ class ENV_BANG
     end
 
     def raise_formatted_error(var, description)
-      return if ENV['SKIP_ENV_ERRORS']
+      return if ENV['ENV_BANG'] == 'false'
 
       e = KeyError.new(Formatter.formatted_error(var, description))
       e.set_backtrace(caller[3..-1])
@@ -46,11 +46,9 @@ class ENV_BANG
 
     def [](var)
       var = var.to_s
+      raise KeyError.new("ENV_BANG is not configured to use var #{var}") unless vars.has_key?(var)
 
-      return Classes.cast ENV[var], vars[var] if vars.has_key?(var)
-      return if ENV['SKIP_ENV_ERRORS']
-
-      raise KeyError.new("ENV_BANG is not configured to use var #{var}")
+      Classes.cast ENV[var], vars[var]
     end
 
     def method_missing(method, *args, &block)
